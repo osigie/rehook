@@ -20,6 +20,7 @@ public class Endpoint extends BaseModel {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = false;
 
+//    TODO:index
     @Column(name = "secret")
     private String secret;
 
