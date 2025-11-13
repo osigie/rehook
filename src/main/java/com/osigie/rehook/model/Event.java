@@ -9,8 +9,9 @@ import java.util.UUID;
 @Table(name = "events")
 public class Event {
     @Id
-    @GeneratedValue
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+    private UUID id;
 
     String name;
 

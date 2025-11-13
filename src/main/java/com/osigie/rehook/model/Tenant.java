@@ -1,18 +1,22 @@
 package com.osigie.rehook.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.UUID;
 
 @Entity
 @Table(name = "events")
-public class Tenant {
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Tenant extends BaseModel {
 
-    @Id
-    @GeneratedValue
-    UUID id;
 
     String name;
 
-    String email;
+    @Builder
+    public Tenant(String name, String description) {
+        this.name = name;
+    }
+
 }
