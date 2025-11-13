@@ -1,4 +1,4 @@
 package com.osigie.rehook.dto.request;
 
-public class EndpointRequestDto {
+public record EndpointRequestDto(String isActive) {
 }
