@@ -20,9 +20,13 @@ public class Endpoint extends BaseModel {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = false;
 
-//    TODO:index
+//    TODO:index, and think about security
     @Column(name = "secret")
     private String secret;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="subscription_id", nullable = false)
+    private Subscription subscription;
 
     @TenantId
     private String tenant;

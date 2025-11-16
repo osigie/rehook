@@ -1,4 +1,6 @@
 package com.osigie.rehook.dto.response;
 
-public record EndpointResponseDto() {
+import java.util.UUID;
+
+public record EndpointResponseDto(UUID id, String url, boolean isActive) {
 }

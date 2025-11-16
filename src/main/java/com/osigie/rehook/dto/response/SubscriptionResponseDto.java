@@ -1,4 +1,7 @@
 package com.osigie.rehook.dto.response;
 
-public class SubscriptionResponseDto {
+import java.util.List;
+import java.util.UUID;
+
+public record SubscriptionResponseDto(List<EndpointResponseDto> endpoints, String name, UUID id) {
 }
