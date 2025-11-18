@@ -1,5 +1,6 @@
 package com.osigie.rehook.service.impl;
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.osigie.rehook.model.Endpoint;
 import com.osigie.rehook.model.Subscription;
 import com.osigie.rehook.repository.EndpointRepository;
@@ -26,6 +27,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public Subscription save(Subscription subscription) {
+        String ingestId = NanoIdUtils.randomNanoId();
+        subscription.setIngestionId(ingestId);
         return subscriptionRepository.save(subscription);
     }
 
@@ -42,6 +45,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public Page<Subscription> findByTenantId(String tenantId, Pageable pageable) {
         return subscriptionRepository.findByTenant(tenantId, pageable);
+    }
+
+    @Override
+    public Subscription findByIngestionId(String ingestionId) {
+//TODO: create not found exception
+        return subscriptionRepository.findByIngestionId(ingestionId).orElseThrow(() -> new RuntimeException("Subscription not found"));
     }
 
     @Override

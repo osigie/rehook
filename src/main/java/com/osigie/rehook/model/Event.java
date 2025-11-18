@@ -19,7 +19,7 @@ public class Event extends BaseModel {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", name = "payload")
-    private Map<String, String> payload;
+    private String payload;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", name = "headers")
@@ -28,14 +28,19 @@ public class Event extends BaseModel {
     @Column(name = "received_at")
     private OffsetDateTime receivedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subscription_id", nullable = false)
+    private Subscription subscription;
+
     @TenantId
     private String tenant;
 
     @Builder
-    public Event(Map<String, String> payload, Map<String, String> headers, OffsetDateTime receivedAt) {
+    public Event(String payload, Map<String, String> headers, OffsetDateTime receivedAt, Subscription subscription) {
         this.payload = payload;
         this.headers = headers;
         this.receivedAt = receivedAt;
+        this.subscription = subscription;
     }
 
 }

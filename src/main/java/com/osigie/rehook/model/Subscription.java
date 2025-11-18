@@ -15,7 +15,18 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Subscription extends BaseModel {
 
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "source_url", nullable = false)
+    private String sourceUrl;
+
+    //TODO: index
+    @Column(name = "ingestion_id", nullable = false)
+    private String ingestionId;
+
+    //add verification type and security
+
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "subscription")
     private Set<Endpoint> endpoints = new HashSet<Endpoint>();
