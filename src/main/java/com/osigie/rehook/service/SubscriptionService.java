@@ -18,6 +18,8 @@ public interface SubscriptionService {
 
     Page<Subscription> findByTenantId(String tenantId, Pageable pageable);
 
+    Subscription findByIngestionId(String ingestionId);
+
     Subscription addEndpoints(List<Endpoint> endpoints, UUID id);
 
     List<Endpoint> listEndpoints(UUID id);
