@@ -30,6 +30,9 @@ public class Delivery extends BaseModel {
     @Column(name = "next_retry_at")
     private OffsetDateTime nextRetryAt;
 
+    @Column(name="retry_count")
+    private int retryCount;
+
     @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<DeliveryAttempt> deliveryAttempts = new HashSet<>();
 
@@ -43,10 +46,11 @@ public class Delivery extends BaseModel {
     }
 
     @Builder
-    public Delivery(Event event, Endpoint endpoint, DeliveryStatusEnum status, OffsetDateTime nextRetryAt) {
+    public Delivery(Event event, Endpoint endpoint, DeliveryStatusEnum status, OffsetDateTime nextRetryAt, int retryCount) {
         this.event = event;
         this.endpoint = endpoint;
         this.status = status;
         this.nextRetryAt = nextRetryAt;
+        this.retryCount =  retryCount;
     }
 }
