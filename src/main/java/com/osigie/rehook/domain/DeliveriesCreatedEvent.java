@@ -1,4 +1,7 @@
-package com.osigie.rehook.domain.model;
+package com.osigie.rehook.domain;
 
-public record DeliveriesCreatedEvent() {
+import java.util.List;
+import java.util.UUID;
+
+public record DeliveriesCreatedEvent(List<UUID> deliveryIds) {
 }

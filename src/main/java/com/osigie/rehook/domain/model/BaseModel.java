@@ -1,4 +1,4 @@
-package com.osigie.rehook.model;
+package com.osigie.rehook.domain.model;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

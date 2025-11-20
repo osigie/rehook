@@ -1,8 +1,8 @@
-package com.osigie.rehook.model;
+package com.osigie.rehook.domain.model;
 
 public enum DeliveryStatusEnum {
     QUEUED,
    SUCCEEDED,
     FAILED,
-    DLQ
+    RETRY, DLQ
 }

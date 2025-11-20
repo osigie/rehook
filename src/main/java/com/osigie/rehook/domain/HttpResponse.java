@@ -1,4 +1,6 @@
 package com.osigie.rehook.domain;
 
-public interface HttpResponse {
+import java.util.Map;
+
+public record HttpResponse(int code, Map<String, String> headers, Map<String, String> body) {
 }

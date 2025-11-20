@@ -1,4 +1,4 @@
-package com.osigie.rehook.model;
+package com.osigie.rehook.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,7 +19,7 @@ public class Delivery extends BaseModel {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "endpoint_id")
     private Endpoint endpoint;
 
