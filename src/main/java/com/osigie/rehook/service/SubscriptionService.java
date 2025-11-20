@@ -1,7 +1,7 @@
 package com.osigie.rehook.service;
 
-import com.osigie.rehook.model.Endpoint;
-import com.osigie.rehook.model.Subscription;
+import com.osigie.rehook.domain.model.Endpoint;
+import com.osigie.rehook.domain.model.Subscription;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

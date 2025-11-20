@@ -11,11 +11,11 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 @Service
 @Slf4j
-public class DeliveriesCreatedListener {
+public class DispatcherListener {
 
     private final DispatcherService dispatcherService;
 
-    public DeliveriesCreatedListener(DispatcherService dispatcherService) {
+    public DispatcherListener(DispatcherService dispatcherService) {
         this.dispatcherService = dispatcherService;
     }
 
