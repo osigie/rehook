@@ -25,7 +25,6 @@ public class IngestionController {
         String payloadString = mapper.writeValueAsString(payload);
 
         this.ingestionService.ingest(ingestionId, payloadString, headers);
-        System.out.println("ingestionId: " + ingestionId);
         return ResponseEntity.accepted().build();
     }
 }
