@@ -10,7 +10,10 @@ import java.time.OffsetDateTime;
 import java.util.Map;
 
 @Entity
-@Table(name = "events")
+@Table(name = "events", uniqueConstraints = @UniqueConstraint(
+        name = "uk_event_subscription_idempotency",
+        columnNames = {"subscription_id", "idempotency_key"}
+))
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,19 +30,25 @@ public class Event extends BaseModel {
     @Column(name = "received_at")
     private OffsetDateTime receivedAt;
 
+    //    TODO: add unique constraint of subscription_id and idempotencyKey
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscription_id", nullable = false)
     private Subscription subscription;
+
+
+    @Column(name = "idempotency_key", length = 50)
+    private String idempotencyKey;
 
     @TenantId
     private String tenant;
 
     @Builder
-    public Event(String payload, Map<String, String> headers, OffsetDateTime receivedAt, Subscription subscription) {
+    public Event(String payload, Map<String, String> headers, OffsetDateTime receivedAt, Subscription subscription, String idempotencyKey) {
         this.payload = payload;
         this.headers = headers;
         this.receivedAt = receivedAt;
         this.subscription = subscription;
+        this.idempotencyKey = idempotencyKey;
     }
 
 }
