@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,15 +23,19 @@ public class DispatcherSchedule {
     }
 
     @Scheduled(fixedRate = 30_000)
+    @Transactional(readOnly = true)
     public void processRetries() {
-//        TODO: think about tenancy state here
-        //TODO: find due deliveries and reschedule
         log.info("checking for retries ......");
         List<UUID> deliveryIdList = dispatcherService.findRetries();
+
+        if (deliveryIdList.isEmpty()) {
+            log.info("no deliveries found");
+            return;
+        }
 
         log.info("due delivery ids  {}", deliveryIdList.size());
 
         applicationEventPublisher
-                .publishEvent(new DeliveriesCreatedEvent(dispatcherService.findRetries()));
+                .publishEvent(new DeliveriesCreatedEvent(deliveryIdList));
     }
 }
