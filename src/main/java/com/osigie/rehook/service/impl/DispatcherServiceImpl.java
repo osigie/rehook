@@ -31,7 +31,6 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Async
     public void dispatchDeliveriesAsync(List<UUID> deliveries) {
         log.info("Dispatching deliveries async");
-
         deliveries.parallelStream().forEach(delivery -> {
             deliveryRepository.findById(delivery)
                     .ifPresentOrElse(this::processDeliveries, () -> log.error("Delivery with id {} not found", delivery));
@@ -39,7 +38,6 @@ public class DispatcherServiceImpl implements DispatcherService {
     }
 
     private void processDeliveries(Delivery delivery) {
-//        TODO: handle delivery status because of multiple endpoints
         OffsetDateTime start = OffsetDateTime.now();
 
         HttpResponse response = httpClientService.send(delivery);
