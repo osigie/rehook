@@ -1,8 +1,8 @@
 package com.osigie.rehook.service.impl;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
-import com.osigie.rehook.model.Endpoint;
-import com.osigie.rehook.model.Subscription;
+import com.osigie.rehook.domain.model.Endpoint;
+import com.osigie.rehook.domain.model.Subscription;
 import com.osigie.rehook.repository.EndpointRepository;
 import com.osigie.rehook.repository.SubscriptionRepository;
 import com.osigie.rehook.service.SubscriptionService;

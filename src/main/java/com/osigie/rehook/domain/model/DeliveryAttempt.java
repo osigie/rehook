@@ -1,4 +1,4 @@
-package com.osigie.rehook.model;
+package com.osigie.rehook.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,7 +7,6 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
-import java.util.UUID;
 
 @Entity
 @Table(name = "delivery_attempts")
@@ -23,7 +22,7 @@ public class DeliveryAttempt extends BaseModel {
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
 
-    @Column(name="executed_at")
+    @Column(name = "executed_at")
     private OffsetDateTime executedAt;
 
     @JdbcTypeCode(SqlTypes.JSON)
@@ -34,12 +33,17 @@ public class DeliveryAttempt extends BaseModel {
     @Column(columnDefinition = "jsonb", name = "response_headers")
     private Map<String, String> responseHeaders;
 
-    @Column(name= "duration")
+    @Column(name = "duration")
     private Integer duration;
 
     @Builder
-    public DeliveryAttempt(int statusCode, Delivery delivery) {
+    public DeliveryAttempt(int statusCode, Delivery delivery, OffsetDateTime executedAt, Map<String, String> responseBody, Map<String, String> responseHeaders, Integer duration) {
         this.statusCode = statusCode;
         this.delivery = delivery;
+        this.executedAt = executedAt;
+        this.responseBody = responseBody;
+        this.responseHeaders = responseHeaders;
+        this.duration = duration;
+
     }
 }

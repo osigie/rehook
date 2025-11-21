@@ -1,7 +1,7 @@
 package com.osigie.rehook.repository;
 
 
-import com.osigie.rehook.model.Endpoint;
+import com.osigie.rehook.domain.model.Endpoint;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
