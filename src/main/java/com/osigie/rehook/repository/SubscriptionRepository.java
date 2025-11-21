@@ -16,4 +16,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
     Page<Subscription> findByTenant(String tenantId, Pageable pageable);
 
     Optional<Subscription> findByIngestionId(String ingestionId);
+
+
 }

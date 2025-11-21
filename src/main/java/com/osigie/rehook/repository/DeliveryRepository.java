@@ -12,8 +12,4 @@ import java.util.List;
 import java.util.UUID;
 
 public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
-    @Query("""
-            SELECT d.id FROM Delivery  d WHERE d.status = :status and d.nextRetryAt < :now
-            """)
-    List<UUID> findAllByStatusAndNextRetryAtBefore(@Param("status") DeliveryStatusEnum status, @Param("now") OffsetDateTime now);
 }

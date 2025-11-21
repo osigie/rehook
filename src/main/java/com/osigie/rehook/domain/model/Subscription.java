@@ -7,6 +7,7 @@ import org.hibernate.annotations.TenantId;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "subscriptions")
@@ -22,7 +23,7 @@ public class Subscription extends BaseModel {
     private String sourceUrl;
 
     //TODO: index
-    @Column(name = "ingestion_id", nullable = false)
+    @Column(name = "ingestion_id", nullable = false, length = 36)
     private String ingestionId;
 
     //add verification type and security
@@ -31,7 +32,7 @@ public class Subscription extends BaseModel {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "subscription")
     private Set<Endpoint> endpoints = new HashSet<Endpoint>();
 
-    @TenantId
+    @Column(name = "tenant", nullable = false, length = 20)
     private String tenant;
 
     @Builder
