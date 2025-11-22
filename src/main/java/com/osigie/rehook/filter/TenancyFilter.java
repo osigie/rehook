@@ -47,7 +47,9 @@ public class TenancyFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
 
         } finally {
-            log.info("Tenant Cleared {}", TenantContext.get().getTenantId());
+            if (TenantContext.get() != null) {
+                log.info("Tenant Cleared {}", TenantContext.get().getTenantId());
+            }
             TenantContext.clear();
         }
     }
