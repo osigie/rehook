@@ -9,6 +9,7 @@ import com.osigie.rehook.domain.model.Subscription;
 import com.osigie.rehook.mapper.EndpointMapper;
 import com.osigie.rehook.mapper.SubscriptionMapper;
 import com.osigie.rehook.service.SubscriptionService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,26 +33,26 @@ public class SubscriptionController {
         this.endpointMapper = endpointMapper;
     }
 
-//    TODO: handle page list
+    //    TODO: handle page list
     @GetMapping
     public Page<Subscription> getSubscriptions(Pageable pageable) {
         return subscriptionService.findByTenantId("default", pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SubscriptionResponseDto> getSubscription(@PathVariable UUID id) {
+    public ResponseEntity<SubscriptionResponseDto> getSubscription(@Valid @PathVariable UUID id) {
         Subscription subscription = subscriptionService.findById(id);
         return new ResponseEntity<>(subscriptionMapper.mapDto(subscription), HttpStatus.CREATED);
     }
 
     @PostMapping
-    public ResponseEntity<SubscriptionResponseDto> createSubscription(@RequestBody SubscriptionRequestDto dto) {
+    public ResponseEntity<SubscriptionResponseDto> createSubscription(@Valid @RequestBody SubscriptionRequestDto dto) {
         Subscription subscription = subscriptionService.save(subscriptionMapper.mapEntity(dto));
         return new ResponseEntity<>(subscriptionMapper.mapDto(subscription), HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}/endpoints")
-    public ResponseEntity<SubscriptionResponseDto> createEndpoints(@RequestBody List<EndpointRequestDto> dto, @PathVariable UUID id) {
+    public ResponseEntity<SubscriptionResponseDto> createEndpoints(@Valid @RequestBody List<EndpointRequestDto> dto, @PathVariable UUID id) {
 
         List<Endpoint> endpoints = endpointMapper.mapEntityList(dto);
         Subscription endpointList = subscriptionService.addEndpoints(endpoints, id);
@@ -61,7 +62,7 @@ public class SubscriptionController {
     }
 
     @GetMapping("/{id}/endpoints")
-    public ResponseEntity<List<EndpointResponseDto>> getEndpoints(@PathVariable UUID id) {
+    public ResponseEntity<List<EndpointResponseDto>> getEndpoints(@Valid @PathVariable UUID id) {
         List<Endpoint> endpointList = subscriptionService.listEndpoints(id);
         System.out.println(endpointList.size());
         return new ResponseEntity<>(endpointMapper.mapDtoList(endpointList), HttpStatus.OK);
