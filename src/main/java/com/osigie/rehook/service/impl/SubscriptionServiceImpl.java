@@ -3,6 +3,7 @@ package com.osigie.rehook.service.impl;
 import com.osigie.rehook.configuration.tenancy.TenantContext;
 import com.osigie.rehook.domain.model.Endpoint;
 import com.osigie.rehook.domain.model.Subscription;
+import com.osigie.rehook.exception.ResourceNotFoundException;
 import com.osigie.rehook.repository.EndpointRepository;
 import com.osigie.rehook.repository.SubscriptionRepository;
 import com.osigie.rehook.service.SubscriptionService;
@@ -38,7 +39,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public Subscription findById(UUID id) {
-        return subscriptionRepository.findById(id).orElseThrow(() -> new RuntimeException("subscription not found"));
+        return subscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("subscription not found"));
     }
 
     @Override
@@ -54,17 +56,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public Subscription findByIngestionId(String ingestionId) {
-//TODO: create not found exception
-        return subscriptionRepository.findByIngestionId(ingestionId).orElseThrow(() -> new RuntimeException("Subscription not found"));
+        return subscriptionRepository.findByIngestionId(ingestionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Subscription not found"));
     }
 
 
     @Override
     public Subscription addEndpoints(List<Endpoint> endpoints, UUID id) {
-        Subscription subscription = subscriptionRepository.findById(id).orElseThrow(() -> new RuntimeException("subscription not found"));
-
+        Subscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("subscription not found"));
         subscription.addEndpoint(endpoints);
-
         return subscriptionRepository.save(subscription);
     }
 
