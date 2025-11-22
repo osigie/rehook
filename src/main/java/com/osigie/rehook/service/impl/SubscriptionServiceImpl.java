@@ -3,11 +3,13 @@ package com.osigie.rehook.service.impl;
 import com.osigie.rehook.configuration.tenancy.TenantContext;
 import com.osigie.rehook.domain.model.Endpoint;
 import com.osigie.rehook.domain.model.Subscription;
+import com.osigie.rehook.exception.ConflictException;
 import com.osigie.rehook.exception.ResourceNotFoundException;
 import com.osigie.rehook.repository.EndpointRepository;
 import com.osigie.rehook.repository.SubscriptionRepository;
 import com.osigie.rehook.service.SubscriptionService;
 import jakarta.persistence.EntityManager;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,10 +33,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public Subscription save(Subscription subscription) {
-        String ingestId = UUID.randomUUID().toString();
-        subscription.setIngestionId(ingestId);
-        subscription.setTenant(TenantContext.get().getTenantId());
-        return subscriptionRepository.save(subscription);
+        try {
+
+            String ingestId = UUID.randomUUID().toString();
+            subscription.setIngestionId(ingestId);
+            subscription.setTenant(TenantContext.get().getTenantId());
+            return subscriptionRepository.save(subscription);
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException("Subscription already exists");
+        }
     }
 
     @Override
