@@ -10,7 +10,14 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "subscriptions")
+@Table(name = "subscriptions",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_subscription_name_tenant",
+                        columnNames = {"name", "tenant"}
+                )}
+
+)
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
