@@ -4,6 +4,9 @@ import com.osigie.rehook.domain.DeliveriesCreatedEvent;
 import com.osigie.rehook.service.DispatcherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,17 +28,18 @@ public class DispatcherSchedule {
     @Scheduled(fixedRate = 30_000)
     @Transactional(readOnly = true)
     public void processRetries() {
-        log.info("checking for retries ......");
-        List<UUID> deliveryIdList = dispatcherService.findRetries();
+        Pageable pageable = PageRequest.of(0, 50);
+        Page<UUID> batch = dispatcherService.findRetries(pageable);
 
-        if (deliveryIdList.isEmpty()) {
-            log.info("no deliveries found");
+        if (batch.isEmpty()) {
+            log.info("No due deliveries found.");
             return;
         }
 
-        log.info("due delivery ids  {}", deliveryIdList.size());
+        log.info("Found {} deliveries to retry", batch.getContent().size());
 
-        applicationEventPublisher
-                .publishEvent(new DeliveriesCreatedEvent(deliveryIdList));
+        applicationEventPublisher.publishEvent(
+                new DeliveriesCreatedEvent(batch.getContent())
+        );
     }
 }

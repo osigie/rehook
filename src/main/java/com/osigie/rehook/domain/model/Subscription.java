@@ -19,9 +19,6 @@ public class Subscription extends BaseModel {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "source_url", nullable = false)
-    private String sourceUrl;
-
     //TODO: index
     @Column(name = "ingestion_id", nullable = false, length = 36)
     private String ingestionId;

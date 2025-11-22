@@ -1,10 +1,13 @@
 package com.osigie.rehook.controller;
 
 import com.osigie.rehook.dto.request.EndpointRequestDto;
+import com.osigie.rehook.dto.request.SubscriptionRequestDto;
 import com.osigie.rehook.dto.response.EndpointResponseDto;
 import com.osigie.rehook.dto.response.SubscriptionResponseDto;
 import com.osigie.rehook.domain.model.Endpoint;
 import com.osigie.rehook.domain.model.Subscription;
+import com.osigie.rehook.mapper.EndpointMapper;
+import com.osigie.rehook.mapper.SubscriptionMapper;
 import com.osigie.rehook.service.SubscriptionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,52 +23,48 @@ import java.util.UUID;
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
+    private final SubscriptionMapper subscriptionMapper;
+    private final EndpointMapper endpointMapper;
 
-    public SubscriptionController(SubscriptionService subscriptionService) {
+    public SubscriptionController(SubscriptionService subscriptionService, SubscriptionMapper subscriptionMapper, EndpointMapper endpointMapper) {
         this.subscriptionService = subscriptionService;
+        this.subscriptionMapper = subscriptionMapper;
+        this.endpointMapper = endpointMapper;
     }
 
+//    TODO: handle page list
     @GetMapping
     public Page<Subscription> getSubscriptions(Pageable pageable) {
         return subscriptionService.findByTenantId("default", pageable);
     }
 
     @GetMapping("/{id}")
-    public Subscription getSubscription(@PathVariable UUID id) {
-        return subscriptionService.findById(id);
+    public ResponseEntity<SubscriptionResponseDto> getSubscription(@PathVariable UUID id) {
+        Subscription subscription = subscriptionService.findById(id);
+        return new ResponseEntity<>(subscriptionMapper.mapDto(subscription), HttpStatus.CREATED);
     }
 
     @PostMapping
-    public Subscription createSubscription(@RequestBody Subscription subscription) {
-        return subscriptionService.save(subscription);
+    public ResponseEntity<SubscriptionResponseDto> createSubscription(@RequestBody SubscriptionRequestDto dto) {
+        Subscription subscription = subscriptionService.save(subscriptionMapper.mapEntity(dto));
+        return new ResponseEntity<>(subscriptionMapper.mapDto(subscription), HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}/endpoints")
-    public ResponseEntity<SubscriptionResponseDto> createEndpoints(@RequestBody List<EndpointRequestDto> dto,  @PathVariable UUID id) {
+    public ResponseEntity<SubscriptionResponseDto> createEndpoints(@RequestBody List<EndpointRequestDto> dto, @PathVariable UUID id) {
 
-//        TODO: use mapper
-        List<Endpoint> endpoints = dto.stream().map((ep)-> Endpoint.builder()
-                .isActive(ep.isActive())
-                        .url(ep.url())
-                .build()).toList();
+        List<Endpoint> endpoints = endpointMapper.mapEntityList(dto);
+        Subscription endpointList = subscriptionService.addEndpoints(endpoints, id);
+        SubscriptionResponseDto subscriptionResponseDto = subscriptionMapper.mapDto(endpointList);
 
-       Subscription  endpointList = subscriptionService.addEndpoints(endpoints, id);
-
-       //TODO use mapper
-        List<EndpointResponseDto> endpointResponseDtos = endpointList.getEndpoints().stream().map((ep)-> new EndpointResponseDto(ep.getId(), ep.getUrl(), ep.isActive())).toList();
-
-        SubscriptionResponseDto subscriptionResponseDto = new SubscriptionResponseDto(endpointResponseDtos, endpointList.getName(), endpointList.getId());
-
-      return new ResponseEntity<>(subscriptionResponseDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(subscriptionResponseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}/endpoints")
     public ResponseEntity<List<EndpointResponseDto>> getEndpoints(@PathVariable UUID id) {
         List<Endpoint> endpointList = subscriptionService.listEndpoints(id);
-
-        List<EndpointResponseDto> endpointResponseDtos = endpointList.stream().map(e -> new EndpointResponseDto(e.getId(),e.getUrl(), e.isActive())).toList();
-
-        return new ResponseEntity<>(endpointResponseDtos, HttpStatus.OK);
+        System.out.println(endpointList.size());
+        return new ResponseEntity<>(endpointMapper.mapDtoList(endpointList), HttpStatus.OK);
 
     }
 }

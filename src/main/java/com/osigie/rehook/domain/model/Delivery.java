@@ -14,6 +14,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Delivery extends BaseModel {
+//TODO: index on status and nextRetryAt
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "event_id")
