@@ -1,15 +1,16 @@
 package com.osigie.rehook.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.osigie.rehook.service.IngestionService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/ingest")
+@Validated
 public class IngestionController {
     private final IngestionService ingestionService;
 
@@ -17,14 +18,18 @@ public class IngestionController {
         this.ingestionService = ingestionService;
     }
 
+
     @PostMapping("/{ingestionId}")
-    public ResponseEntity<?> ingest(@PathVariable(name = "ingestionId") String ingestionId, @RequestBody Map<String, Object> payload, @RequestHeader Map<String, String> headers
-    ) throws JsonProcessingException {
-
-        ObjectMapper mapper = new ObjectMapper();
-        String payloadString = mapper.writeValueAsString(payload);
-
-        this.ingestionService.ingest(ingestionId, payloadString, headers);
-        return ResponseEntity.accepted().build();
+    public ResponseEntity<Void> ingest(
+            @PathVariable UUID ingestionId,
+            @RequestBody String payload,
+            @RequestHeader Map<String, String> headers
+    ) {
+        try {
+            ingestionService.ingest(ingestionId.toString(), payload, headers);
+            return ResponseEntity.accepted().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
