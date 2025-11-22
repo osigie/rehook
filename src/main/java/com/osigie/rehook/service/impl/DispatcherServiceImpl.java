@@ -7,6 +7,8 @@ import com.osigie.rehook.domain.model.DeliveryStatusEnum;
 import com.osigie.rehook.repository.DeliveryRepository;
 import com.osigie.rehook.service.DispatcherService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -88,10 +90,11 @@ public class DispatcherServiceImpl implements DispatcherService {
     }
 
 
-    public List<UUID> findRetries() {
-        List<UUID> dueDeliveries = deliveryRepository
-                .findAllByStatusAndNextRetryAtBefore(DeliveryStatusEnum.RETRY, OffsetDateTime.now());
+    public Page<UUID> findRetries(Pageable batchSize) {
+        return deliveryRepository
+                .findAllByStatusAndNextRetryAtBefore(DeliveryStatusEnum.RETRY, OffsetDateTime.now(), batchSize);
 
-        return dueDeliveries;
     }
+
+
 }
