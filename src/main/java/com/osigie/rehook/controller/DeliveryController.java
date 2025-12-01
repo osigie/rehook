@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("deliveries")
+@RequestMapping("/api/deliveries")
 public class DeliveryController {
     private final DispatcherService dispatcherService;
 

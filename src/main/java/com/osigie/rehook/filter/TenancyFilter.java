@@ -11,8 +11,10 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
@@ -22,10 +24,14 @@ import java.io.IOException;
 public class TenancyFilter implements Filter {
     private final SubscriptionService subscriptionService;
     private final ObjectMapper objectMapper;
+    private final HandlerExceptionResolver resolver;
 
-    public TenancyFilter(SubscriptionService subscriptionService, ObjectMapper objectMapper) {
+    public TenancyFilter(SubscriptionService subscriptionService, ObjectMapper objectMapper,
+                         @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver
+    ) {
         this.subscriptionService = subscriptionService;
         this.objectMapper = objectMapper;
+        this.resolver = resolver;
     }
 
     @Override
@@ -43,24 +49,26 @@ public class TenancyFilter implements Filter {
                 Subscription subscription = subscriptionService.findByIngestionId(ingestionId);
                 TenantContext.set(TenantContext.builder().tenantId(subscription.getTenant()).build());
                 log.info("Tenant set from ingestion subscription: {}", subscription.getTenant());
-            } else {
-                String tenantId = httpRequest.getHeader("x-tenant-id");
-                if (tenantId == null || tenantId.isBlank()) {
-                    tenantId = "default";
-                }
-                TenantContext.set(TenantContext.builder().tenantId(tenantId).build());
-                log.info("Tenant set from header or default: {}", tenantId);
             }
 
             filterChain.doFilter(servletRequest, servletResponse);
 
-        } catch (ResourceNotFoundException ex) {
-            log.error("Resource not found: {}", ex.getMessage());
-            sendErrorResponse(httpResponse, HttpStatus.NOT_FOUND, ex.getMessage());
 
         } catch (Exception ex) {
-            log.error("Unexpected error in TenancyFilter", ex);
-            sendErrorResponse(httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
+            resolver.resolveException(httpRequest, httpResponse, null, ex);
+//            if (resolver != null) {
+//                resolver.resolveException(request, response, null, ex);
+//            } else {
+//                throw ex;
+//        catch (ResourceNotFoundException ex) {
+//            log.error("Resource not found: {}", ex.getMessage());
+//            sendErrorResponse(httpResponse, HttpStatus.NOT_FOUND, ex.getMessage());
+//
+//        } catch (Exception ex) {
+//            log.error("Unexpected error in TenancyFilter", ex);
+//            sendErrorResponse(httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
+//        }
+
         } finally {
             if (TenantContext.get() != null) {
                 log.info("Tenant Cleared {}", TenantContext.get().getTenantId());
@@ -69,11 +77,11 @@ public class TenancyFilter implements Filter {
         }
     }
 
-    private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
-        response.setStatus(status.value());
-        response.setContentType("application/json");
-        ErrorResponseDto errorResponse = new ErrorResponseDto(status, message, status.value());
-        String json = objectMapper.writeValueAsString(errorResponse);
-        response.getWriter().write(json);
-    }
+//    private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
+//        response.setStatus(status.value());
+//        response.setContentType("application/json");
+//        ErrorResponseDto errorResponse = new ErrorResponseDto(status, message, status.value());
+//        String json = objectMapper.writeValueAsString(errorResponse);
+//        response.getWriter().write(json);
+//    }
 }

@@ -5,17 +5,19 @@ import lombok.*;
 
 
 @Entity
-@Table(name = "events")
+@Table(name = "tenants")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Tenant extends BaseModel {
 
 
-    String name;
+    @Column(unique = true, nullable = false, length = 50, name = "name")
+    private String name;
+
 
     @Builder
-    public Tenant(String name, String description) {
+    public Tenant(String name) {
         this.name = name;
     }
 
