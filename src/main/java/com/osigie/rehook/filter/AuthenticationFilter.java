@@ -36,8 +36,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+            @NonNull FilterChain filterChain) {
         try {
             String authHeader = request.getHeader("Authorization");
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -65,14 +64,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (Exception ex) {
-
             resolver.resolveException(request, response, null, ex);
-//            if (resolver != null) {
-//                resolver.resolveException(request, response, null, ex);
-//            } else {
-//                throw ex;
-//            }
         } finally {
+            if (TenantContext.get() != null) {
+                log.info("Tenant Cleared {}", TenantContext.get().getTenantId());
+            }
             TenantContext.clear();
         }
 

@@ -35,7 +35,7 @@ public class TenancyFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         String path = httpRequest.getRequestURI();
@@ -50,25 +50,9 @@ public class TenancyFilter implements Filter {
                 TenantContext.set(TenantContext.builder().tenantId(subscription.getTenant()).build());
                 log.info("Tenant set from ingestion subscription: {}", subscription.getTenant());
             }
-
             filterChain.doFilter(servletRequest, servletResponse);
-
-
         } catch (Exception ex) {
             resolver.resolveException(httpRequest, httpResponse, null, ex);
-//            if (resolver != null) {
-//                resolver.resolveException(request, response, null, ex);
-//            } else {
-//                throw ex;
-//        catch (ResourceNotFoundException ex) {
-//            log.error("Resource not found: {}", ex.getMessage());
-//            sendErrorResponse(httpResponse, HttpStatus.NOT_FOUND, ex.getMessage());
-//
-//        } catch (Exception ex) {
-//            log.error("Unexpected error in TenancyFilter", ex);
-//            sendErrorResponse(httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
-//        }
-
         } finally {
             if (TenantContext.get() != null) {
                 log.info("Tenant Cleared {}", TenantContext.get().getTenantId());
@@ -76,12 +60,4 @@ public class TenancyFilter implements Filter {
             TenantContext.clear();
         }
     }
-
-//    private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
-//        response.setStatus(status.value());
-//        response.setContentType("application/json");
-//        ErrorResponseDto errorResponse = new ErrorResponseDto(status, message, status.value());
-//        String json = objectMapper.writeValueAsString(errorResponse);
-//        response.getWriter().write(json);
-//    }
 }
