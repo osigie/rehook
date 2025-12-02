@@ -12,7 +12,7 @@ import java.util.Map;
 public class TenantIdentifierResolver
         implements CurrentTenantIdentifierResolver<String>, HibernatePropertiesCustomizer {
 
-    private String currentTenant = "default";
+    private String currentTenant = "";
 
     public void setCurrentTenant(String tenant) {
         currentTenant = tenant;
@@ -36,7 +36,6 @@ public class TenantIdentifierResolver
 
     @Override
     public boolean validateExistingCurrentSessions() {
-        // TODO Auto-generated method stub
         return true;
     }
 }

@@ -15,7 +15,6 @@ public class Tenant extends BaseModel {
     @Column(unique = true, nullable = false, length = 50, name = "name")
     private String name;
 
-
     @Builder
     public Tenant(String name) {
         this.name = name;
