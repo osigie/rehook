@@ -2,7 +2,9 @@ package com.osigie.rehook.service.impl;
 
 import com.osigie.rehook.domain.model.Tenant;
 import com.osigie.rehook.domain.model.User;
+import com.osigie.rehook.exception.ConflictException;
 import com.osigie.rehook.exception.UserAlreadyExistException;
+import com.osigie.rehook.repository.TenantRepository;
 import com.osigie.rehook.repository.UserRepository;
 import com.osigie.rehook.service.AuthService;
 import com.osigie.rehook.service.JWTService;
@@ -10,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,13 +22,17 @@ import java.util.Map;
 @Slf4j
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
+    private final TenantRepository tenantRepository;
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthServiceImpl(UserRepository userRepository, AuthenticationManager authenticationManager, JWTService jwtService) {
+    public AuthServiceImpl(UserRepository userRepository, TenantRepository tenantRepository, AuthenticationManager authenticationManager, JWTService jwtService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.tenantRepository = tenantRepository;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -33,6 +40,10 @@ public class AuthServiceImpl implements AuthService {
 
         if (userRepository.findByEmail(email).isPresent()) {
             throw new UserAlreadyExistException();
+        }
+
+        if (tenantRepository.findByName(tenantName).isPresent()) {
+            throw new ConflictException("Tenant already exists");
         }
 
         Tenant tenant = Tenant
@@ -43,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
         User user = User
                 .builder()
                 .email(email)
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .tenant(tenant)
                 .build();
 
