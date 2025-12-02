@@ -4,6 +4,7 @@ import com.osigie.rehook.domain.HttpResponse;
 import com.osigie.rehook.domain.model.Delivery;
 import com.osigie.rehook.domain.model.DeliveryAttempt;
 import com.osigie.rehook.domain.model.DeliveryStatusEnum;
+import com.osigie.rehook.exception.ResourceNotFoundException;
 import com.osigie.rehook.repository.DeliveryRepository;
 import com.osigie.rehook.service.DispatcherService;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +95,16 @@ public class DispatcherServiceImpl implements DispatcherService {
         return deliveryRepository
                 .findAllByStatusAndNextRetryAtBefore(DeliveryStatusEnum.RETRY, OffsetDateTime.now(), batchSize);
 
+    }
+
+    @Override
+    public Page<Delivery> listDeliveries(Pageable page) {
+        return deliveryRepository.findAll(page);
+    }
+
+    @Override
+    public Delivery getDelivery(UUID id) {
+        return deliveryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Delivery with id " + id + " not found"));
     }
 
 

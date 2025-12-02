@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public User register(String email, String password, String tenantName) {
-
+//TODO: handle trimming
         if (userRepository.findByEmail(email).isPresent()) {
             throw new UserAlreadyExistException();
         }
