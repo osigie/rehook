@@ -34,7 +34,7 @@ public class DeliveryAttempt extends BaseModel {
     private Map<String, String> responseHeaders;
 
     @Column(name = "duration")
-    private Integer duration;
+    private int duration;
 
     @Builder
     public DeliveryAttempt(int statusCode, Delivery delivery, OffsetDateTime executedAt, Map<String, String> responseBody, Map<String, String> responseHeaders, Integer duration) {

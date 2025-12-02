@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -18,4 +17,6 @@ public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
     Page<UUID> findAllByStatusAndNextRetryAtBefore(@Param("status") DeliveryStatusEnum status,
                                                    @Param("now") OffsetDateTime now,
                                                    Pageable pageable);
+
+
 }
