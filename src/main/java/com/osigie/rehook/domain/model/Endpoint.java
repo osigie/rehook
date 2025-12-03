@@ -19,10 +19,8 @@ public class Endpoint extends BaseModel {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = false;
 
-    //add verification type and security
-//    TODO:index, and think about security
-    @Column(name = "secret")
-    private String secret;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "endpoint")
+    private EndpointAuth endpointAuth;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscription_id", nullable = false)
@@ -31,13 +29,18 @@ public class Endpoint extends BaseModel {
     @TenantId
     private String tenant;
 
+    public void addEndpointAuth(EndpointAuth endpointAuth) {
+        if (endpointAuth != null) {
+            endpointAuth.setEndpoint(this);
+            this.endpointAuth = endpointAuth;
+        }
+    }
 
     @Builder
-    public Endpoint(String url, boolean isActive, String secret) {
+    public Endpoint(String url, boolean isActive, EndpointAuth endpointAuth) {
         this.url = url;
         this.isActive = isActive;
-        this.secret = secret;
-
+        addEndpointAuth(endpointAuth);
     }
 
 }
