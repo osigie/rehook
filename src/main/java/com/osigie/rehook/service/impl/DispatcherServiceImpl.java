@@ -7,6 +7,7 @@ import com.osigie.rehook.domain.model.DeliveryStatusEnum;
 import com.osigie.rehook.exception.ResourceNotFoundException;
 import com.osigie.rehook.repository.DeliveryRepository;
 import com.osigie.rehook.service.DispatcherService;
+import com.osigie.rehook.service.impl.HttpClient.HttpClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +45,7 @@ public class DispatcherServiceImpl implements DispatcherService {
         OffsetDateTime start = OffsetDateTime.now();
 
         HttpResponse response = httpClientService.send(delivery);
-
+//TODO: investigate bug
         DeliveryAttempt deliveryAttempt = DeliveryAttempt.builder()
                 .delivery(delivery)
                 .statusCode(response.code())

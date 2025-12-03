@@ -1,4 +1,4 @@
-package com.osigie.rehook.service.impl;
+package com.osigie.rehook.service.impl.HttpClient;
 
 import com.osigie.rehook.domain.HttpResponse;
 import com.osigie.rehook.domain.model.AuthType;
@@ -23,43 +23,34 @@ import java.util.Map;
 public class HttpClientService {
 
     private final WebClient webClient;
+    private final AuthStrategyFactory authStrategyFactory;
 
-    public HttpClientService(WebClient.Builder webClient) {
+    public HttpClientService(WebClient.Builder webClient, AuthStrategyFactory authStrategyFactory) {
         this.webClient = webClient.clientConnector(new ReactorClientHttpConnector(
                 HttpClient.create()
                         .responseTimeout(Duration.ofSeconds(10))
         )).build();
-    }
-
-    public Map<String, String> processEndpointSecurity(EndpointAuth endpointAuth) {
-        Map<String, String> map = new HashMap<>();
-        AuthType authType = endpointAuth.getAuthType();
-        switch (authType) {
-            case NONE:
-                break;
-            case API_KEY:
-                map.put("auth", endpointAuth.getApiKeyName());
-                map.put("auth_value", endpointAuth.getApiKeyValue());
-                break;
-            case BASIC_AUTH:
-                String basic = Base64.getEncoder()
-                        .encodeToString((endpointAuth.getBasicUsername() + ":" + endpointAuth.getBasicPassword()).getBytes());
-
-                map.put("auth", "Authorization");
-                map.put("auth_value", "Bearer " + basic);
-                break;
-        }
-        return map;
+        this.authStrategyFactory = authStrategyFactory;
     }
 
     public HttpResponse send(Delivery delivery) {
         String url = delivery.getEndpoint().getUrl();
         String payload = delivery.getEvent().getPayload();
 
+        Endpoint endpoint = delivery.getEndpoint();
+        EndpointAuth endpointAuth = endpoint.getEndpointAuth();
+
+        AuthStrategy authStrategy = authStrategyFactory.getAuthStrategy(endpointAuth.getAuthType());
+        Map<String, String> securityHeaders = authStrategy.getHeaders(endpointAuth, payload);
+
         try {
-            ClientResponse response = this.webClient.post()
+            WebClient.RequestBodySpec request = this.webClient.post()
                     .uri(url)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+
+            securityHeaders.forEach(request::header);
+
+            ClientResponse response = request
                     .bodyValue(payload)
                     .exchange().block();
 

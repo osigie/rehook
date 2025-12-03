@@ -43,14 +43,6 @@ public class IngestionServiceImpl implements IngestionService {
     @Transactional
     public void ingest(String ingestionId, String payload, Map<String, String> headers) {
 
-        /**
-         *
-         * 1. Get the subscription with the ingestion id if not found, throw not found error
-         * 2. Perform security validation of the payload based on the verification method on the subscription
-         * 3. Create event and delivery in a transaction and enqueue a delivery*/
-
-
-        // 1.
         Subscription subscription = subscriptionService.findByIngestionId(ingestionId);
         String idempotencyKey = this.generateIdempotencyKey(ingestionId, payload);
 
@@ -63,9 +55,7 @@ public class IngestionServiceImpl implements IngestionService {
         }
 
 
-//       2. TODO perform validation using strategy pattern based on verification type
 
-//        3.
         Event event = eventRepository.save(Event.builder()
                 .idempotencyKey(idempotencyKey)
                 .receivedAt(OffsetDateTime.now())
