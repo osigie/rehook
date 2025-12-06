@@ -7,6 +7,7 @@ import com.osigie.rehook.domain.model.DeliveryStatusEnum;
 import com.osigie.rehook.exception.ResourceNotFoundException;
 import com.osigie.rehook.repository.DeliveryRepository;
 import com.osigie.rehook.service.DispatcherService;
+import com.osigie.rehook.service.impl.HttpClient.HttpClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,14 +46,14 @@ public class DispatcherServiceImpl implements DispatcherService {
         OffsetDateTime start = OffsetDateTime.now();
 
         HttpResponse response = httpClientService.send(delivery);
-
+//TODO: investigate bug
         DeliveryAttempt deliveryAttempt = DeliveryAttempt.builder()
                 .delivery(delivery)
                 .statusCode(response.code())
                 .executedAt(start)
                 .duration((int) Duration.between(start, OffsetDateTime.now()).toMillis())
                 .responseBody(response.body())
-                .responseHeaders(response.headers())
+                .responseHeaders(new HashMap<>(response.headers()))
                 .build();
 
         delivery.addDeliveryAttempt(deliveryAttempt);
@@ -94,7 +96,6 @@ public class DispatcherServiceImpl implements DispatcherService {
     public Page<UUID> findRetries(Pageable batchSize) {
         return deliveryRepository
                 .findAllByStatusAndNextRetryAtBefore(DeliveryStatusEnum.RETRY, OffsetDateTime.now(), batchSize);
-
     }
 
     @Override

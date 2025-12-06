@@ -5,6 +5,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public record DeliveryAttemptResponseDto(UUID id, int statusCode, OffsetDateTime executedAt,
-                                         Map<String, String> responseBody, Map<String, String> responseHeaders,
+                                         Map<String, Object> responseBody, Map<String, Object> responseHeaders,
                                          int duration) {
 }
