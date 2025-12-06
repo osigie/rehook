@@ -41,7 +41,7 @@ public class IngestionServiceImpl implements IngestionService {
 
     @Override
     @Transactional
-    public void ingest(String ingestionId, String payload, Map<String, String> headers) {
+    public void ingest(String ingestionId, String payload, Map<String, Object> headers) {
 
         Subscription subscription = subscriptionService.findByIngestionId(ingestionId);
         String idempotencyKey = this.generateIdempotencyKey(ingestionId, payload);

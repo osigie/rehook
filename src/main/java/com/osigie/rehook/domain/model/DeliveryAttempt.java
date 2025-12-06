@@ -27,23 +27,22 @@ public class DeliveryAttempt extends BaseModel {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", name = "response_body")
-    private Map<String, String> responseBody;
+    private Map<String, Object> responseBody;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", name = "response_headers")
-    private Map<String, String> responseHeaders;
+    private Map<String, Object> responseHeaders;
 
     @Column(name = "duration")
     private int duration;
 
     @Builder
-    public DeliveryAttempt(int statusCode, Delivery delivery, OffsetDateTime executedAt, Map<String, String> responseBody, Map<String, String> responseHeaders, Integer duration) {
+    public DeliveryAttempt(int statusCode, Delivery delivery, OffsetDateTime executedAt, Map<String, Object> responseBody, Map<String, Object> responseHeaders, Integer duration) {
         this.statusCode = statusCode;
         this.delivery = delivery;
         this.executedAt = executedAt;
         this.responseBody = responseBody;
         this.responseHeaders = responseHeaders;
         this.duration = duration;
-
     }
 }

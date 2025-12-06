@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,7 +53,7 @@ public class DispatcherServiceImpl implements DispatcherService {
                 .executedAt(start)
                 .duration((int) Duration.between(start, OffsetDateTime.now()).toMillis())
                 .responseBody(response.body())
-                .responseHeaders(response.headers())
+                .responseHeaders(new HashMap<>(response.headers()))
                 .build();
 
         delivery.addDeliveryAttempt(deliveryAttempt);
@@ -95,7 +96,6 @@ public class DispatcherServiceImpl implements DispatcherService {
     public Page<UUID> findRetries(Pageable batchSize) {
         return deliveryRepository
                 .findAllByStatusAndNextRetryAtBefore(DeliveryStatusEnum.RETRY, OffsetDateTime.now(), batchSize);
-
     }
 
     @Override

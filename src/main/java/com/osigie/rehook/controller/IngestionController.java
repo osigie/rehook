@@ -23,7 +23,7 @@ public class IngestionController {
     public ResponseEntity<Void> ingest(
             @PathVariable UUID ingestionId,
             @RequestBody String payload,
-            @RequestHeader Map<String, String> headers
+            @RequestHeader Map<String, Object> headers
     ) {
         try {
             ingestionService.ingest(ingestionId.toString(), payload, headers);

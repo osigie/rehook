@@ -25,7 +25,7 @@ public class Event extends BaseModel {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", name = "headers")
-    private Map<String, String> headers;
+    private Map<String, Object> headers;
 
     @Column(name = "received_at")
     private OffsetDateTime receivedAt;
@@ -43,7 +43,7 @@ public class Event extends BaseModel {
     private String tenant;
 
     @Builder
-    public Event(String payload, Map<String, String> headers, OffsetDateTime receivedAt, Subscription subscription, String idempotencyKey) {
+    public Event(String payload, Map<String, Object> headers, OffsetDateTime receivedAt, Subscription subscription, String idempotencyKey) {
         this.payload = payload;
         this.headers = headers;
         this.receivedAt = receivedAt;
