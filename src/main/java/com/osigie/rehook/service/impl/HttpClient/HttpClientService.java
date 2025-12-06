@@ -1,7 +1,6 @@
 package com.osigie.rehook.service.impl.HttpClient;
 
 import com.osigie.rehook.domain.HttpResponse;
-import com.osigie.rehook.domain.model.AuthType;
 import com.osigie.rehook.domain.model.Delivery;
 import com.osigie.rehook.domain.model.Endpoint;
 import com.osigie.rehook.domain.model.EndpointAuth;
@@ -12,11 +11,10 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -42,23 +40,24 @@ public class HttpClientService {
 
         AuthStrategy authStrategy = authStrategyFactory.getAuthStrategy(endpointAuth.getAuthType());
         Map<String, String> securityHeaders = authStrategy.getHeaders(endpointAuth, payload);
-
         try {
             WebClient.RequestBodySpec request = this.webClient.post()
                     .uri(url)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-
-            securityHeaders.forEach(request::header);
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .headers(h -> securityHeaders.forEach(h::add))
+                    .contentLength(payload.length());
 
             ClientResponse response = request
                     .bodyValue(payload)
-                    .exchange().block();
+                    .exchangeToMono(Mono::just)
+                    .block();
 
             int status = response.statusCode().value();
 
             Map<String, String> headers = response.headers().asHttpHeaders().toSingleValueMap();
+            Map<String, Object> body = response.bodyToMono(Map.class).blockOptional().orElse(Map.of());
 
-            Map<String, String> body = response.bodyToMono(Map.class).blockOptional().orElse(Map.of());
             return new HttpResponse(status, headers, body);
 
         } catch (Exception e) {
