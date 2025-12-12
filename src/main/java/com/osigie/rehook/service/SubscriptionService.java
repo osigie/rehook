@@ -5,6 +5,7 @@ import com.osigie.rehook.domain.model.Subscription;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ public interface SubscriptionService {
 
     List<Subscription> findByName(String name);
 
-    Page<Subscription> findByTenantId(String tenantId, Pageable pageable);
+    Page<Subscription> list(OffsetDateTime fromDate, OffsetDateTime toDate, Pageable pageable);
 
     Subscription findByIngestionId(String ingestionId);
 

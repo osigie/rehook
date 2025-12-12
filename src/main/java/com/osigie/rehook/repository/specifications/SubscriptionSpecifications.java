@@ -1,7 +1,6 @@
 package com.osigie.rehook.repository.specifications;
 
-import com.osigie.rehook.domain.model.Delivery;
-import com.osigie.rehook.domain.model.DeliveryStatusEnum;
+import com.osigie.rehook.domain.model.Subscription;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -9,12 +8,11 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeliverySpecifications {
+public class SubscriptionSpecifications {
 
-    public static Specification<Delivery> withFilters(
+    public static Specification<Subscription> withFilters(
             OffsetDateTime fromDate,
-            OffsetDateTime toDate,
-            DeliveryStatusEnum status
+            OffsetDateTime toDate
     ) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -25,10 +23,6 @@ public class DeliverySpecifications {
 
             if (toDate != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), toDate));
-            }
-
-            if (status != null) {
-                predicates.add(criteriaBuilder.equal(root.get("status"), status));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

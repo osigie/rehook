@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -102,7 +101,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     }
 
     @Override
-    public Page<Delivery> listDeliveries(Pageable page, LocalDate fromDate, LocalDate toDate, DeliveryStatusEnum status) {
+    public Page<Delivery> listDeliveries(Pageable page, OffsetDateTime fromDate, OffsetDateTime toDate, DeliveryStatusEnum status) {
         Specification<Delivery> spec = DeliverySpecifications.withFilters(fromDate, toDate, status);
         return deliveryRepository.findAll(spec, page);
     }

@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -42,9 +43,9 @@ public class DeliveryController {
     public ResponseEntity<PageResponseDto<DeliveryResponseDto>> listDeliveries(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
-            @RequestParam(required = false)DeliveryStatusEnum status
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) OffsetDateTime fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) OffsetDateTime toDate,
+            @RequestParam(required = false) DeliveryStatusEnum status
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Delivery> deliveries = dispatcherService.listDeliveries(pageable, fromDate, toDate, status);

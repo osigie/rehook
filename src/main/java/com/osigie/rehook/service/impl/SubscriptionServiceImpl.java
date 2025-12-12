@@ -1,19 +1,24 @@
 package com.osigie.rehook.service.impl;
 
 import com.osigie.rehook.configuration.tenancy.TenantContext;
+import com.osigie.rehook.domain.model.Delivery;
 import com.osigie.rehook.domain.model.Endpoint;
 import com.osigie.rehook.domain.model.Subscription;
 import com.osigie.rehook.exception.ConflictException;
 import com.osigie.rehook.exception.ResourceNotFoundException;
 import com.osigie.rehook.repository.EndpointRepository;
 import com.osigie.rehook.repository.SubscriptionRepository;
+import com.osigie.rehook.repository.specifications.DeliverySpecifications;
+import com.osigie.rehook.repository.specifications.SubscriptionSpecifications;
 import com.osigie.rehook.service.SubscriptionService;
 import jakarta.persistence.EntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,7 +39,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public Subscription save(Subscription subscription) {
         try {
-
             String ingestId = UUID.randomUUID().toString();
             subscription.setIngestionId(ingestId);
             subscription.setTenant(TenantContext.get().getTenantId());
@@ -56,8 +60,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public Page<Subscription> findByTenantId(String tenantId, Pageable pageable) {
-        return subscriptionRepository.findByTenant(tenantId, pageable);
+    public Page<Subscription> list(OffsetDateTime fromDate, OffsetDateTime toDate, Pageable pageable) {
+        Specification<Subscription> spec = SubscriptionSpecifications.withFilters(fromDate, toDate);
+        return subscriptionRepository.findAll(spec, pageable);
     }
 
 
