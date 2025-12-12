@@ -6,15 +6,18 @@ import com.osigie.rehook.domain.model.DeliveryAttempt;
 import com.osigie.rehook.domain.model.DeliveryStatusEnum;
 import com.osigie.rehook.exception.ResourceNotFoundException;
 import com.osigie.rehook.repository.DeliveryRepository;
+import com.osigie.rehook.repository.specifications.DeliverySpecifications;
 import com.osigie.rehook.service.DispatcherService;
 import com.osigie.rehook.service.impl.HttpClient.HttpClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -99,8 +102,9 @@ public class DispatcherServiceImpl implements DispatcherService {
     }
 
     @Override
-    public Page<Delivery> listDeliveries(Pageable page) {
-        return deliveryRepository.findAll(page);
+    public Page<Delivery> listDeliveries(Pageable page, LocalDate fromDate, LocalDate toDate, DeliveryStatusEnum status) {
+        Specification<Delivery> spec = DeliverySpecifications.withFilters(fromDate, toDate, status);
+        return deliveryRepository.findAll(spec, page);
     }
 
     @Override
