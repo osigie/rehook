@@ -4,6 +4,7 @@ import com.osigie.rehook.domain.model.Delivery;
 import com.osigie.rehook.domain.model.DeliveryStatusEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +20,5 @@ public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
                                                    Pageable pageable);
 
 
+    Page<Delivery> findAll(Specification<Delivery> spec, Pageable page);
 }

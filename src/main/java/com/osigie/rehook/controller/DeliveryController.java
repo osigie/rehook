@@ -1,6 +1,7 @@
 package com.osigie.rehook.controller;
 
 import com.osigie.rehook.domain.model.Delivery;
+import com.osigie.rehook.domain.model.DeliveryStatusEnum;
 import com.osigie.rehook.dto.response.DeliveryResponseDto;
 import com.osigie.rehook.dto.response.PageResponseDto;
 import com.osigie.rehook.mapper.DeliveryMapper;
@@ -8,10 +9,13 @@ import com.osigie.rehook.service.DispatcherService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,11 +38,16 @@ public class DeliveryController {
 
     }
 
-//    TODO: enhance the pagination
     @GetMapping
-    public ResponseEntity<PageResponseDto<DeliveryResponseDto>> listDeliveries() {
-        PageRequest page = PageRequest.of(0, 10);
-        Page<Delivery> deliveries = dispatcherService.listDeliveries(page);
+    public ResponseEntity<PageResponseDto<DeliveryResponseDto>> listDeliveries(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @RequestParam(required = false)DeliveryStatusEnum status
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Delivery> deliveries = dispatcherService.listDeliveries(pageable, fromDate, toDate, status);
 
         List<DeliveryResponseDto> deliveryResponse = deliveries.getContent().stream()
                 .map(deliveryMapper::mapDto).collect(Collectors.toList());
