@@ -128,7 +128,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         subscription.removeEndpoint(existingEndpoint);
 
-        endpointRepository.save(existingEndpoint);
+        subscriptionRepository.save(subscription);
         endpointRepository.delete(existingEndpoint);
     }
 
