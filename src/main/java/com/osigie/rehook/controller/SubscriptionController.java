@@ -4,7 +4,6 @@ import com.osigie.rehook.domain.model.Endpoint;
 import com.osigie.rehook.domain.model.Subscription;
 import com.osigie.rehook.dto.request.EndpointRequestDto;
 import com.osigie.rehook.dto.request.SubscriptionRequestDto;
-import com.osigie.rehook.dto.response.DeliveryResponseDto;
 import com.osigie.rehook.dto.response.EndpointResponseDto;
 import com.osigie.rehook.dto.response.PageResponseDto;
 import com.osigie.rehook.dto.response.SubscriptionResponseDto;
@@ -47,7 +46,7 @@ public class SubscriptionController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) OffsetDateTime toDate
     ) {
         Pageable pageable = PageRequest.of(page, size);
-       Page<Subscription>  subscriptions = subscriptionService.list(fromDate, toDate, pageable);
+        Page<Subscription> subscriptions = subscriptionService.list(fromDate, toDate, pageable);
 
         List<SubscriptionResponseDto> subResponse = subscriptions.getContent().stream()
                 .map(subscriptionMapper::mapDto).collect(Collectors.toList());
@@ -89,5 +88,20 @@ public class SubscriptionController {
         System.out.println(endpointList.size());
         return new ResponseEntity<>(endpointMapper.mapDtoList(endpointList), HttpStatus.OK);
 
+    }
+
+
+    @PutMapping("/{id}/endpoints/{endpointId}")
+    public ResponseEntity<SubscriptionResponseDto> updateEndpoint(
+            @PathVariable UUID id,
+            @PathVariable UUID endpointId,
+            @Valid @RequestBody EndpointRequestDto dto) {
+
+        Endpoint endpoint = endpointMapper.mapEntity(dto);
+        Subscription updatedSubscription = subscriptionService.updateEndpoint(endpoint, id, endpointId);
+
+        SubscriptionResponseDto subscriptionResponseDto = subscriptionMapper.mapDto(updatedSubscription);
+
+        return ResponseEntity.ok(subscriptionResponseDto);
     }
 }

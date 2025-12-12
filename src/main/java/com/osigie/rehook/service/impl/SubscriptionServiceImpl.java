@@ -1,14 +1,13 @@
 package com.osigie.rehook.service.impl;
 
 import com.osigie.rehook.configuration.tenancy.TenantContext;
-import com.osigie.rehook.domain.model.Delivery;
 import com.osigie.rehook.domain.model.Endpoint;
+import com.osigie.rehook.domain.model.EndpointAuth;
 import com.osigie.rehook.domain.model.Subscription;
 import com.osigie.rehook.exception.ConflictException;
 import com.osigie.rehook.exception.ResourceNotFoundException;
 import com.osigie.rehook.repository.EndpointRepository;
 import com.osigie.rehook.repository.SubscriptionRepository;
-import com.osigie.rehook.repository.specifications.DeliverySpecifications;
 import com.osigie.rehook.repository.specifications.SubscriptionSpecifications;
 import com.osigie.rehook.service.SubscriptionService;
 import jakarta.persistence.EntityManager;
@@ -79,6 +78,36 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 .orElseThrow(() -> new ResourceNotFoundException("subscription not found"));
         subscription.addEndpoint(endpoints);
         return subscriptionRepository.save(subscription);
+    }
+
+    @Override
+    public Subscription updateEndpoint(Endpoint endpoint, UUID id, UUID endpointId) {
+        Subscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("subscription not found"));
+
+        Endpoint existingEndpoint = endpointRepository.findByIdAndSubscriptionId(endpointId, id).orElseThrow(() -> new ResourceNotFoundException("Endpoint not found"));
+
+        EndpointAuth existingAuth = existingEndpoint.getEndpointAuth();
+        EndpointAuth newAuth = endpoint.getEndpointAuth();
+
+        if (existingAuth != null && newAuth != null) {
+            existingAuth.setAuthType(newAuth.getAuthType());
+            existingAuth.setApiKeyName(newAuth.getApiKeyName());
+            existingAuth.setApiKeyValue(newAuth.getApiKeyValue());
+            existingAuth.setBasicUsername(newAuth.getBasicUsername());
+            existingAuth.setBasicPassword(newAuth.getBasicPassword());
+            existingAuth.setHmacSecret(newAuth.getHmacSecret());
+        } else if (newAuth != null) {
+            existingEndpoint.addEndpointAuth(newAuth);
+        }
+
+        existingEndpoint.setUrl(endpoint.getUrl());
+        existingEndpoint.setActive(endpoint.isActive());
+
+        subscription.addEndpoint(existingEndpoint);
+
+        endpointRepository.save(existingEndpoint);
+        return subscription;
     }
 
     @Override

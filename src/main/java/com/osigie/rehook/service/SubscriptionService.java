@@ -23,5 +23,7 @@ public interface SubscriptionService {
 
     Subscription addEndpoints(List<Endpoint> endpoints, UUID id);
 
+    Subscription updateEndpoint(Endpoint endpoint, UUID id, UUID endpointId);
+
     List<Endpoint> listEndpoints(UUID id);
 }
