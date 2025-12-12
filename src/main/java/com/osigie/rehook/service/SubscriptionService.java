@@ -26,4 +26,6 @@ public interface SubscriptionService {
     Subscription updateEndpoint(Endpoint endpoint, UUID id, UUID endpointId);
 
     List<Endpoint> listEndpoints(UUID id);
+
+    void deleteEndpoint(UUID id, UUID endpointId);
 }

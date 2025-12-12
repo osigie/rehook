@@ -6,6 +6,7 @@ import com.osigie.rehook.domain.model.EndpointAuth;
 import com.osigie.rehook.domain.model.Subscription;
 import com.osigie.rehook.exception.ConflictException;
 import com.osigie.rehook.exception.ResourceNotFoundException;
+import com.osigie.rehook.repository.DeliveryRepository;
 import com.osigie.rehook.repository.EndpointRepository;
 import com.osigie.rehook.repository.SubscriptionRepository;
 import com.osigie.rehook.repository.specifications.SubscriptionSpecifications;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -27,12 +29,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final EndpointRepository endpointRepository;
-    private final EntityManager entityManager;
+    private final DeliveryRepository deliveryRepository;
 
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, EndpointRepository endpointRepository, EntityManager entityManager) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, EndpointRepository endpointRepository, DeliveryRepository deliveryRepository) {
         this.subscriptionRepository = subscriptionRepository;
         this.endpointRepository = endpointRepository;
-        this.entityManager = entityManager;
+        this.deliveryRepository = deliveryRepository;
     }
 
     @Override
@@ -113,6 +115,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public List<Endpoint> listEndpoints(UUID id) {
         return endpointRepository.findBySubscriptionId(id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteEndpoint(UUID id, UUID endpointId) {
+
+        Subscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("subscription not found"));
+
+        Endpoint existingEndpoint = endpointRepository.findByIdAndSubscriptionId(endpointId, id).orElseThrow(() -> new ResourceNotFoundException("Endpoint not found"));
+
+        subscription.removeEndpoint(existingEndpoint);
+
+        endpointRepository.save(existingEndpoint);
+        endpointRepository.delete(existingEndpoint);
     }
 
 }

@@ -49,11 +49,14 @@ public class Subscription extends BaseModel {
         endpoint.setSubscription(this);
     }
 
+    public void removeEndpoint(Endpoint endpoint) {
+        endpoints.remove(endpoint);
+        endpoint.setSubscription(null);
+    }
 
     public void addEndpoint(List<Endpoint> endpoints) {
         endpoints.forEach(this::addEndpoint);
     }
 
-//   TODO: add security type
 
 }

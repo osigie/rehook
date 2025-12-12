@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.TenantId;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Entity
 @Table(name = "endpoints")
@@ -19,12 +22,15 @@ public class Endpoint extends BaseModel {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = false;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "endpoint")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "endpoint", orphanRemoval = true)
     private EndpointAuth endpointAuth;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscription_id", nullable = false)
     private Subscription subscription;
+
+    @OneToMany(mappedBy = "endpoint", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Delivery> deliveries = new HashSet<>();
 
     @TenantId
     private String tenant;

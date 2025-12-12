@@ -104,4 +104,14 @@ public class SubscriptionController {
 
         return ResponseEntity.ok(subscriptionResponseDto);
     }
+
+
+    @DeleteMapping("/{id}/endpoints/{endpointId}")
+    public ResponseEntity<?> updateEndpoint(
+            @PathVariable UUID id,
+            @PathVariable UUID endpointId) {
+
+        subscriptionService.deleteEndpoint(id, endpointId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
