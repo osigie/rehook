@@ -5,8 +5,11 @@ import com.osigie.rehook.domain.model.Endpoint;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface EndpointRepository extends JpaRepository<Endpoint, UUID> {
     List<Endpoint> findBySubscriptionId(UUID id);
+
+    Optional<Endpoint> findByIdAndSubscriptionId(UUID endpointId, UUID id);
 }

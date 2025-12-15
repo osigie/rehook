@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface EventRepository extends JpaRepository<Event, UUID> {
     Optional<Event> findBySubscriptionIdAndIdempotencyKey(UUID subscriptionId, String idempotencyKey);
+
+    void deleteBySubscriptionId(UUID id);
 }

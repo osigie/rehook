@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotNull;
 public record EndpointAuthRequestDto(
         @NotNull
         AuthType authType,
-                                     String apiKeyName,
-                                     String apiKeyValue,
-                                     String hmacSecret,
-                                     String basicUsername,
-                                     String basicPassword) {
+        String apiKeyName,
+        String apiKeyValue,
+        String hmacSecret,
+        String basicUsername,
+        String basicPassword) {
 }

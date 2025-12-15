@@ -1,23 +1,28 @@
 package com.osigie.rehook.controller;
 
+import com.osigie.rehook.domain.model.Endpoint;
+import com.osigie.rehook.domain.model.Subscription;
 import com.osigie.rehook.dto.request.EndpointRequestDto;
 import com.osigie.rehook.dto.request.SubscriptionRequestDto;
 import com.osigie.rehook.dto.response.EndpointResponseDto;
+import com.osigie.rehook.dto.response.PageResponseDto;
 import com.osigie.rehook.dto.response.SubscriptionResponseDto;
-import com.osigie.rehook.domain.model.Endpoint;
-import com.osigie.rehook.domain.model.Subscription;
 import com.osigie.rehook.mapper.EndpointMapper;
 import com.osigie.rehook.mapper.SubscriptionMapper;
 import com.osigie.rehook.service.SubscriptionService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/subscriptions")
@@ -33,10 +38,26 @@ public class SubscriptionController {
         this.endpointMapper = endpointMapper;
     }
 
-    //    TODO: handle page list
     @GetMapping
-    public Page<Subscription> getSubscriptions(Pageable pageable) {
-        return subscriptionService.findByTenantId("default", pageable);
+    public ResponseEntity<PageResponseDto<SubscriptionResponseDto>> getSubscriptions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) OffsetDateTime fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) OffsetDateTime toDate
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Subscription> subscriptions = subscriptionService.list(fromDate, toDate, pageable);
+
+        List<SubscriptionResponseDto> subResponse = subscriptions.getContent().stream()
+                .map(subscriptionMapper::mapDto).collect(Collectors.toList());
+
+        PageResponseDto<SubscriptionResponseDto> response = new PageResponseDto(
+                subscriptions.getTotalElements(),
+                subscriptions.getNumber(),
+                subscriptions.getSize(),
+                subResponse);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -49,6 +70,20 @@ public class SubscriptionController {
     public ResponseEntity<SubscriptionResponseDto> createSubscription(@Valid @RequestBody SubscriptionRequestDto dto) {
         Subscription subscription = subscriptionService.save(subscriptionMapper.mapEntity(dto));
         return new ResponseEntity<>(subscriptionMapper.mapDto(subscription), HttpStatus.CREATED);
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SubscriptionResponseDto> updateSubscription(@Valid @RequestBody SubscriptionRequestDto dto, @PathVariable UUID id) {
+        Subscription subscription = subscriptionService.update(id, subscriptionMapper.mapEntity(dto));
+        return new ResponseEntity<>(subscriptionMapper.mapDto(subscription), HttpStatus.CREATED);
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> updateSubscription(@PathVariable UUID id) {
+        subscriptionService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/{id}/endpoints")
@@ -67,5 +102,30 @@ public class SubscriptionController {
         System.out.println(endpointList.size());
         return new ResponseEntity<>(endpointMapper.mapDtoList(endpointList), HttpStatus.OK);
 
+    }
+
+
+    @PutMapping("/{id}/endpoints/{endpointId}")
+    public ResponseEntity<SubscriptionResponseDto> updateEndpoint(
+            @PathVariable UUID id,
+            @PathVariable UUID endpointId,
+            @Valid @RequestBody EndpointRequestDto dto) {
+
+        Endpoint endpoint = endpointMapper.mapEntity(dto);
+        Subscription updatedSubscription = subscriptionService.updateEndpoint(endpoint, id, endpointId);
+
+        SubscriptionResponseDto subscriptionResponseDto = subscriptionMapper.mapDto(updatedSubscription);
+
+        return ResponseEntity.ok(subscriptionResponseDto);
+    }
+
+
+    @DeleteMapping("/{id}/endpoints/{endpointId}")
+    public ResponseEntity<?> updateEndpoint(
+            @PathVariable UUID id,
+            @PathVariable UUID endpointId) {
+
+        subscriptionService.deleteEndpoint(id, endpointId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
