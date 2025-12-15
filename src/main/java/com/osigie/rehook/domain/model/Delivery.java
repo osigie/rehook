@@ -14,7 +14,6 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Delivery extends BaseModel {
-//TODO: index on status and nextRetryAt
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "event_id")
@@ -31,7 +30,7 @@ public class Delivery extends BaseModel {
     @Column(name = "next_retry_at")
     private OffsetDateTime nextRetryAt;
 
-    @Column(name="retry_count")
+    @Column(name = "retry_count")
     private int retryCount;
 
     @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -52,6 +51,6 @@ public class Delivery extends BaseModel {
         this.endpoint = endpoint;
         this.status = status;
         this.nextRetryAt = nextRetryAt;
-        this.retryCount =  retryCount;
+        this.retryCount = retryCount;
     }
 }

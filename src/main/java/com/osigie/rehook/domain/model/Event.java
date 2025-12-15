@@ -30,11 +30,9 @@ public class Event extends BaseModel {
     @Column(name = "received_at")
     private OffsetDateTime receivedAt;
 
-    //    TODO: add unique constraint of subscription_id and idempotencyKey
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscription_id", nullable = false)
     private Subscription subscription;
-
 
     @Column(name = "idempotency_key", length = 50)
     private String idempotencyKey;

@@ -11,7 +11,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Tenant extends BaseModel {
 
-
     @Column(unique = true, nullable = false, length = 50, name = "name")
     private String name;
 
