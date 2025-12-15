@@ -13,6 +13,8 @@ public interface SubscriptionService {
 
     Subscription save(Subscription subscription);
 
+    Subscription update(UUID id, Subscription subscription);
+
     Subscription findById(UUID id);
 
     List<Subscription> findByName(String name);
@@ -28,4 +30,6 @@ public interface SubscriptionService {
     List<Endpoint> listEndpoints(UUID id);
 
     void deleteEndpoint(UUID id, UUID endpointId);
+
+    void delete(UUID id);
 }

@@ -2,12 +2,10 @@ package com.osigie.rehook.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.TenantId;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "subscriptions",
@@ -29,8 +27,6 @@ public class Subscription extends BaseModel {
     //TODO: index
     @Column(name = "ingestion_id", nullable = false, length = 36)
     private String ingestionId;
-
-    //add verification type and security
 
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "subscription")

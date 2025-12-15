@@ -6,12 +6,11 @@ import com.osigie.rehook.domain.model.EndpointAuth;
 import com.osigie.rehook.domain.model.Subscription;
 import com.osigie.rehook.exception.ConflictException;
 import com.osigie.rehook.exception.ResourceNotFoundException;
-import com.osigie.rehook.repository.DeliveryRepository;
 import com.osigie.rehook.repository.EndpointRepository;
+import com.osigie.rehook.repository.EventRepository;
 import com.osigie.rehook.repository.SubscriptionRepository;
 import com.osigie.rehook.repository.specifications.SubscriptionSpecifications;
 import com.osigie.rehook.service.SubscriptionService;
-import jakarta.persistence.EntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,12 +28,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final EndpointRepository endpointRepository;
-    private final DeliveryRepository deliveryRepository;
+    private final EventRepository eventRepository;
 
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, EndpointRepository endpointRepository, DeliveryRepository deliveryRepository) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, EndpointRepository endpointRepository, EventRepository eventRepository) {
         this.subscriptionRepository = subscriptionRepository;
         this.endpointRepository = endpointRepository;
-        this.deliveryRepository = deliveryRepository;
+        this.eventRepository = eventRepository;
     }
 
     @Override
@@ -47,6 +46,23 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         } catch (DataIntegrityViolationException e) {
             throw new ConflictException("Subscription already exists");
         }
+    }
+
+
+    @Override
+    public Subscription update(UUID id, Subscription subscription) {
+        Subscription prevSub = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("subscription not found"));
+        prevSub.setName(subscription.getName());
+        return subscriptionRepository.save(prevSub);
+    }
+
+
+    @Override
+    @Transactional
+    public void delete(UUID id) {
+        eventRepository.deleteBySubscriptionId(id);
+        subscriptionRepository.deleteById(id);
     }
 
     @Override
@@ -131,5 +147,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionRepository.save(subscription);
         endpointRepository.delete(existingEndpoint);
     }
+
 
 }

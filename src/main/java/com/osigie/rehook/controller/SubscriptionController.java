@@ -72,6 +72,20 @@ public class SubscriptionController {
         return new ResponseEntity<>(subscriptionMapper.mapDto(subscription), HttpStatus.CREATED);
     }
 
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SubscriptionResponseDto> updateSubscription(@Valid @RequestBody SubscriptionRequestDto dto, @PathVariable UUID id) {
+        Subscription subscription = subscriptionService.update(id, subscriptionMapper.mapEntity(dto));
+        return new ResponseEntity<>(subscriptionMapper.mapDto(subscription), HttpStatus.CREATED);
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> updateSubscription(@PathVariable UUID id) {
+        subscriptionService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @PostMapping("/{id}/endpoints")
     public ResponseEntity<SubscriptionResponseDto> createEndpoints(@Valid @RequestBody List<EndpointRequestDto> dto, @PathVariable UUID id) {
 
