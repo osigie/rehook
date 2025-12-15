@@ -15,7 +15,6 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Endpoint extends BaseModel {
 
-
     @Column(name = "url")
     private String url;
 
