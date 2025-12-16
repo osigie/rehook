@@ -23,14 +23,12 @@ import java.io.IOException;
 @Slf4j
 public class TenancyFilter implements Filter {
     private final SubscriptionService subscriptionService;
-    private final ObjectMapper objectMapper;
     private final HandlerExceptionResolver resolver;
 
     public TenancyFilter(SubscriptionService subscriptionService, ObjectMapper objectMapper,
                          @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver
     ) {
         this.subscriptionService = subscriptionService;
-        this.objectMapper = objectMapper;
         this.resolver = resolver;
     }
 

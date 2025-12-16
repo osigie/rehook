@@ -13,7 +13,12 @@ import java.util.Set;
                 @UniqueConstraint(
                         name = "uk_subscription_name_tenant",
                         columnNames = {"name", "tenant"}
-                )}
+                )},
+        indexes = {
+                @Index(
+                        name = "ingestion_id_index", columnList = "ingestion_id", unique = true)
+        }
+
 
 )
 @Getter
@@ -24,7 +29,6 @@ public class Subscription extends BaseModel {
     @Column(name = "name", nullable = false)
     private String name;
 
-    //TODO: index
     @Column(name = "ingestion_id", nullable = false, length = 36)
     private String ingestionId;
 
