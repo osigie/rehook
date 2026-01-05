@@ -68,7 +68,7 @@ public class ExceptionControllerAdvice {
 
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleNoHandlerFoundException(final NoHandlerFoundException ex) {
+    public ResponseEntity<ErrorResponseDto> handleNoHandlerFoundException() {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.NOT_FOUND, "Resource not found", HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(errorResponseDto, HttpStatus.NOT_FOUND);
     }

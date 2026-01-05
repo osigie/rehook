@@ -3,22 +3,19 @@ package com.osigie.rehook.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.osigie.rehook.configuration.tenancy.TenantContext;
 import com.osigie.rehook.domain.model.Subscription;
-import com.osigie.rehook.dto.response.ErrorResponseDto;
-import com.osigie.rehook.exception.ResourceNotFoundException;
-import com.osigie.rehook.repository.SubscriptionRepository;
 import com.osigie.rehook.service.SubscriptionService;
-import jakarta.servlet.*;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-
-import java.io.IOException;
 
 
 @Component
