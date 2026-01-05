@@ -1,10 +1,7 @@
 package com.osigie.rehook.service.impl;
 
 import com.osigie.rehook.domain.DeliveriesCreatedEvent;
-import com.osigie.rehook.domain.model.Delivery;
-import com.osigie.rehook.domain.model.DeliveryStatusEnum;
-import com.osigie.rehook.domain.model.Event;
-import com.osigie.rehook.domain.model.Subscription;
+import com.osigie.rehook.domain.model.*;
 import com.osigie.rehook.repository.DeliveryRepository;
 import com.osigie.rehook.repository.EventRepository;
 import com.osigie.rehook.service.IngestionService;
@@ -65,7 +62,7 @@ public class IngestionServiceImpl implements IngestionService {
 
 
         List<Delivery> deliveries = subscription.getEndpoints().stream()
-                .filter((e) -> e.isActive())
+                .filter(Endpoint::isActive)
                 .map(e -> Delivery
                         .builder()
                         .endpoint(e)
@@ -77,7 +74,7 @@ public class IngestionServiceImpl implements IngestionService {
         List<Delivery> savedDeliveries = deliveryRepository.saveAll(deliveries);
 
         applicationEventPublisher
-                .publishEvent(new DeliveriesCreatedEvent(savedDeliveries.stream().map((delivery -> delivery.getId())).toList()));
+                .publishEvent(new DeliveriesCreatedEvent(savedDeliveries.stream().map((BaseModel::getId)).toList()));
     }
 
     private String generateIdempotencyKey(String ingestionId, String payload) {

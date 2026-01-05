@@ -48,7 +48,6 @@ public class DispatcherServiceImpl implements DispatcherService {
         OffsetDateTime start = OffsetDateTime.now();
 
         HttpResponse response = httpClientService.send(delivery);
-//TODO: investigate bug
         DeliveryAttempt deliveryAttempt = DeliveryAttempt.builder()
                 .delivery(delivery)
                 .statusCode(response.code())
