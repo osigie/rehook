@@ -2,7 +2,9 @@ package com.osigie.rehook.controller;
 
 import com.osigie.rehook.dto.response.ErrorResponseDto;
 import com.osigie.rehook.exception.ConflictException;
+import com.osigie.rehook.exception.RateLimitException;
 import com.osigie.rehook.exception.ResourceNotFoundException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -53,6 +55,18 @@ public class ExceptionControllerAdvice {
     }
 
 
+    @ExceptionHandler(RateLimitException.class)
+    public ResponseEntity<ErrorResponseDto> handleRateLimitException(RateLimitException ex) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.TOO_MANY_REQUESTS,
+                ex.getMessage(),
+                HttpStatus.TOO_MANY_REQUESTS.value());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Retry-After", String.valueOf(ex.getRetryAfterSeconds()));
+
+        return new ResponseEntity<>(errorResponseDto, headers, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleNoHandlerFoundException(final NoHandlerFoundException ex) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.NOT_FOUND, "Resource not found", HttpStatus.NOT_FOUND.value());
@@ -64,6 +78,5 @@ public class ExceptionControllerAdvice {
     public ResponseEntity<ErrorResponseDto> exception(Exception ex) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.BAD_REQUEST, ex.getMessage(), HttpStatus.BAD_GATEWAY.value());
         return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
-
     }
 }

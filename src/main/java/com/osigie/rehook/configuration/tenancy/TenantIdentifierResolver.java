@@ -1,5 +1,6 @@
 package com.osigie.rehook.configuration.tenancy;
 
+import lombok.Setter;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;
@@ -8,15 +9,12 @@ import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
+@Setter
 @Component
 public class TenantIdentifierResolver
         implements CurrentTenantIdentifierResolver<String>, HibernatePropertiesCustomizer {
 
     private String currentTenant = "";
-
-    public void setCurrentTenant(String tenant) {
-        currentTenant = tenant;
-    }
 
     @Override
     public String resolveCurrentTenantIdentifier() {
