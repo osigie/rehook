@@ -32,7 +32,7 @@ public class AuthController {
     public ResponseEntity<UserResponseDto> register(
             @RequestBody @Valid RegisterDto request
     ) {
-        User user = authService.register(request.email(), request.password(), request.tenant());
+        User user = authService.register(request.email().trim(), request.password(), request.tenant().trim());
         return new ResponseEntity<>(userMapper.mapDto(user), HttpStatus.CREATED);
     }
 
@@ -42,7 +42,7 @@ public class AuthController {
             @RequestBody @Valid LoginRequestDto request
     ) {
         Map<String, Object> userData = authService
-                .authenticate(request.email(), request.password());
+                .authenticate(request.email().trim(), request.password());
 
         UserResponseDto user = userMapper.mapDto((User) userData.get("user"));
         String token = (String) userData.get("token");
