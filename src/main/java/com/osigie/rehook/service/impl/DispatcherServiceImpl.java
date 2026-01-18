@@ -88,7 +88,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     }
 
     private OffsetDateTime calculateNextRetry(int retryCount) {
-        long baseSeconds = 2;
+        long baseSeconds = 60;
         long delay = (long) (baseSeconds * Math.pow(2, retryCount));
         return OffsetDateTime.now().plusSeconds(delay);
     }
