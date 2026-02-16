@@ -4,9 +4,11 @@ import com.osigie.rehook.dto.response.ErrorResponseDto;
 import com.osigie.rehook.exception.ConflictException;
 import com.osigie.rehook.exception.RateLimitException;
 import com.osigie.rehook.exception.ResourceNotFoundException;
+import com.osigie.rehook.exception.UserAlreadyExistException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,6 +54,18 @@ public class ExceptionControllerAdvice {
     public ResponseEntity<ErrorResponseDto> handleConflictException(ConflictException ex) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.CONFLICT, ex.getMessage(), HttpStatus.CONFLICT.value());
         return new ResponseEntity<>(errorResponseDto, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UserAlreadyExistException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserAlreadyExistException(UserAlreadyExistException ex) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.CONFLICT, ex.getMessage(), HttpStatus.CONFLICT.value());
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthenticationException(AuthenticationException ex) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.UNAUTHORIZED, ex.getMessage(), HttpStatus.UNAUTHORIZED.value());
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.UNAUTHORIZED);
     }
 
 
